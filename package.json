@@ -1,0 +1,12 @@
+{
+  "name": "lab-console",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "dev": "node scripts/preview.mjs"
+  },
+  "engines": { "node": ">=22.13.0" }
+}
+

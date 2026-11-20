@@ -1,0 +1,16 @@
+{
+  "name": "lab-console-api",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-11-20",
+  "vars": {
+    "LAB_WEB_ORIGIN": "https://YOUR-GITHUB-OWNER.github.io"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lab-console",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}

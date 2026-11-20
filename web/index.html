@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="查看实验室温湿度、实验排程和物资设备状态。">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <meta name="lab-api-origin" content="">
+  <meta name="theme-color" content="#f8f8fc">
+  <title>实验室协作台</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./environment.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <a href="#overview" data-destination="overview" class="brand"><span class="brand-icon" data-icon="flask"></span><span><strong>实验室协作台</strong><small>Lab Workspace</small></span></a>
+    <div class="side-main">
+      <p class="nav-heading">工作区</p>
+      <nav aria-label="主要导航">
+        <a href="#overview" data-view="overview"><span data-icon="grid"></span>实验室总览</a>
+        <a href="#experiments" data-view="experiments"><span data-icon="book"></span>实验日志</a>
+        <a href="#environment" data-view="environment"><span data-icon="activity"></span>环境监测</a>
+        <a href="#resources" data-view="resources"><span data-icon="box"></span>物资与设备 <i id="nav-count" hidden></i></a>
+      </nav>
+      <p class="nav-heading side-second">管理</p>
+      <nav aria-label="管理导航"><a href="#settings" data-view="settings"><span data-icon="settings"></span>模拟传感器</a></nav>
+    </div>
+    <div class="side-footer"><span class="lab-avatar" data-icon="building"></span><div><strong>共享实验室</strong><small>中国标准时间 · UTC+8</small></div></div>
+  </aside>
+  <div class="shell">
+    <header class="topbar">
+      <div class="crumb"><button class="icon-btn mobile-menu" id="menu" aria-label="展开导航" aria-expanded="false" data-icon="menu"></button><span class="crumb-workspace">工作区</span><span class="crumb-slash">/</span><strong id="crumb-view">实验室总览</strong></div>
+      <div class="top-actions"><span class="top-date"><span data-icon="calendar"></span><time id="top-date"></time></span><span class="access-label" id="read-only" hidden>只读</span><button class="btn secondary share-btn" data-action="share" data-write hidden aria-label="分享协作链接" title="分享协作链接"><span data-icon="share"></span><span class="share-label">分享链接</span></button><button class="btn primary" data-action="experiment" data-write hidden><span data-icon="plus"></span>登记实验</button></div>
+    </header>
+    <main id="main">
+      <div class="page-heading"><div><h1 id="page-title">实验室总览</h1><p id="page-description">实时掌握环境、实验排程和物资设备状态。</p></div></div>
+      <div class="banner" id="banner" hidden role="status"></div>
+      <section class="section" id="environment" aria-labelledby="environment-title">
+        <div class="section-head"><h2 id="environment-title"><span class="section-icon" data-icon="activity"></span>环境监测</h2><span class="live-pill" id="sensor-badge"><i></i><span>读取中</span></span></div>
+        <div class="environment-grid">
+          <article class="card metric temp">
+            <div class="metric-header"><span class="metric-icon" data-icon="thermometer"></span><span>实时温度</span></div>
+            <div class="metric-value"><strong id="temperature">—</strong><span>°C</span></div>
+            <div class="sparkline" id="temp-spark" aria-hidden="true"></div>
+            <div class="metric-footer"><span id="temp-caption">等待传感器读数</span><span class="metric-range" id="temp-range"></span></div>
+          </article>
+          <article class="card metric humid">
+            <div class="metric-header"><span class="metric-icon" data-icon="droplet"></span><span>相对湿度</span></div>
+            <div class="metric-value"><strong id="humidity">—</strong><span>% RH</span></div>
+            <div class="sparkline" id="humidity-spark" aria-hidden="true"></div>
+            <div class="metric-footer"><span id="humidity-caption">等待传感器读数</span><span class="metric-range" id="humidity-range"></span></div>
+          </article>
+          <article class="card trend-card">
+            <div class="trend-header"><div><h3>温湿度趋势</h3><div class="legend"><span><i></i>温度</span><span><i></i>湿度</span></div></div><div class="segmented" id="period-buttons" aria-label="趋势时间范围"><button type="button" data-hours="6" aria-pressed="true">6 小时</button><button type="button" data-hours="24" aria-pressed="false">24 小时</button></div></div>
+            <div class="chart" id="chart" role="img" aria-label="温度与湿度趋势图"></div>
+          </article>
+        </div>
+      </section>
+      <div class="work-grid" id="work-grid">
+        <section class="section" id="experiments" aria-labelledby="experiment-title">
+          <div class="section-head"><h2 id="experiment-title"><span class="section-icon" data-icon="book"></span>今日实验安排</h2><a class="text-link" href="#experiments" data-destination="experiments" data-overview-link>查看日志 <span data-icon="chevron-right"></span></a></div>
+          <article class="card schedule-card">
+            <div class="schedule-toolbar">
+              <div class="day-label"><span class="day-icon" data-icon="calendar"></span><div><strong id="day-label"></strong><small id="schedule-count">正在读取记录</small></div></div>
+              <div class="date-actions"><button class="icon-btn" data-action="previous" aria-label="前一天" data-icon="chevron-left"></button><div class="date-picker"><button class="icon-btn" id="select-date" data-action="pick-date" aria-label="选择日期" data-icon="calendar"></button><input id="date-input" type="date" aria-label="实验日期"></div><button class="icon-btn" data-action="next" aria-label="后一天" data-icon="chevron-right"></button><button class="btn small today" data-action="today" hidden>今天</button></div>
+            </div>
+            <div class="schedule-content" id="schedules" aria-live="polite"><div class="loading">正在加载实验安排…</div></div>
+            <div class="schedule-bottom" data-write hidden><button class="btn schedule-add" data-action="experiment"><span data-icon="plus"></span>登记此日实验</button></div>
+          </article>
+        </section>
+        <section class="section" id="resources" aria-labelledby="resources-title">
+          <div class="section-head"><h2 id="resources-title"><span class="section-icon" data-icon="box"></span>物资与设备</h2><button class="text-link" data-action="report" data-write hidden><span data-icon="plus"></span>登记事项</button></div>
+          <article class="card tasks-card">
+            <div class="task-tabs" role="group" aria-label="事项类型"><button data-task="all" aria-pressed="true">全部 <span id="all-count">0</span></button><button data-task="stock" aria-pressed="false">待补货 <span id="stock-count">0</span></button><button data-task="repair" aria-pressed="false">待维修 <span id="repair-count">0</span></button><button data-task="done" aria-pressed="false">已处理</button></div>
+            <div id="tasks" class="task-list" aria-live="polite"><div class="loading">正在加载事项…</div></div>
+          </article>
+        </section>
+      </div>
+      <section class="section settings-panel" id="settings" hidden>
+        <div class="card settings-card"><h2><span class="section-icon" data-icon="activity"></span>温湿度数据来源</h2><dl class="settings-facts"><div><dt>采集模式</dt><dd>模拟传感器</dd></div><div><dt>最近更新</dt><dd id="settings-update">—</dd></div><div><dt>刷新间隔</dt><dd>10 秒</dd></div></dl>
+          <p>站点自动生成模拟温湿度。打开页面时会持续更新，所有访客在同一时刻看到相同读数。</p>
+        </div>
+      </section>
+      <footer class="page-footer"><span>实验室协作台</span><span id="last-refresh">北京时间（UTC+8）</span></footer>
+    </main>
+  </div>
+  <dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-header"><h2 id="dialog-title"></h2><button class="icon-btn" data-action="close" aria-label="关闭" data-icon="x"></button></div><div id="dialog-body"></div></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
